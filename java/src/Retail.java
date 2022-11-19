@@ -40,6 +40,11 @@ public class Retail {
    static BufferedReader in = new BufferedReader(
                                 new InputStreamReader(System.in));
 
+
+   public static String globalType;
+   public static String globalID;
+
+
    /**
     * Creates a new instance of Retail shop
     *
@@ -387,8 +392,15 @@ public class Retail {
 
          String query = String.format("SELECT * FROM USERS WHERE name = '%s' AND password = '%s'", name, password);
          int userNum = esql.executeQuery(query);
-	 if (userNum > 0)
+	 if (userNum > 0){
+		
+		query = String.format("Select u.userID FROM Users u WHERE name = '%s' AND password = '%s'", name, password);
+		List<List<String>> extract = esql.executeQueryAndReturnResult(query);
+		String userid = extract.get(0).get(0);
+		globalID = userid;
+
 		return name;
+	 }
          return null;
       }catch(Exception e){
          System.err.println (e.getMessage ());
@@ -398,7 +410,33 @@ public class Retail {
 
 // Rest of the functions definition go in here
 
-   public static void viewStores(Retail esql) {}
+   /* view stores within 30 miles of users lat/long */
+
+	public static void viewStores(Retail esql) {
+		try{
+
+	  	/* QUERY EXAMPLE TO GRAB SOMETHING FROM USER GIVEN 'globalID'
+		String fuckthis = String.format("SELECT u.name FROM Users u WHERE userID = %s", globalID);
+
+		List<List<String>> myreturn = esql.executeQueryAndReturnResult(fuckthis);
+		
+		String namesies = myreturn.get(0).get(0);
+		System.out.print("\tName of current user found was: ");
+		System.out.print(namesies);
+		System.out.print("\n");
+		*/
+			
+
+			
+			
+		 }
+         
+      catch(Exception e){
+         System.err.println (e.getMessage ());
+         
+      }
+	}
+
    public static void viewProducts(Retail esql) {}
    public static void placeOrder(Retail esql) {}
    public static void viewRecentOrders(Retail esql) {}
