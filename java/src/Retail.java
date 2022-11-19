@@ -43,7 +43,8 @@ public class Retail {
 
    public static String globalType;
    public static String globalID;
-
+   public static String globalLat;
+   public static String globalLong;
 
    /**
     * Creates a new instance of Retail shop
@@ -73,7 +74,7 @@ public class Retail {
    }//end Retail
 
    // Method to calculate euclidean distance between two latitude, longitude pairs. 
-   public double calculateDistance (double lat1, double long1, double lat2, double long2){
+   public static double calculateDistance (double lat1, double long1, double lat2, double long2){
       double t1 = (lat1 - lat2) * (lat1 - lat2);
       double t2 = (long1 - long2) * (long1 - long2);
       return Math.sqrt(t1 + t2); 
@@ -394,10 +395,21 @@ public class Retail {
          int userNum = esql.executeQuery(query);
 	 if (userNum > 0){
 		
-		query = String.format("Select u.userID FROM Users u WHERE name = '%s' AND password = '%s'", name, password);
+		query = String.format("Select u.userID, u.latitude, u.longitude FROM Users u WHERE name = '%s' AND password = '%s'", name, password);
 		List<List<String>> extract = esql.executeQueryAndReturnResult(query);
 		String userid = extract.get(0).get(0);
 		globalID = userid;
+		globalLat = extract.get(0).get(1);
+		globalLong = extract.get(0).get(2);
+		
+		/*
+		System.out.print("\tUsers lat: ");
+		System.out.print(globalLat);
+		System.out.println();
+		System.out.print("\tUsers long: ");		
+		System.out.print(globalLong);
+		System.out.println();
+		*/
 
 		return name;
 	 }
@@ -424,12 +436,46 @@ public class Retail {
 		System.out.print("\tName of current user found was: ");
 		System.out.print(namesies);
 		System.out.print("\n");
+		Name 
 		*/
-			
 
+			double lat1 = Double.parseDouble(globalLat);
+			double long1 = Double.parseDouble(globalLong);
+
+			//gets all the store information into a hand List List
+			String query = "SELECT * FROM Store";
+			List<List<String>> extract = esql.executeQueryAndReturnResult(query);
+
+			//need to do a loop
 			
-			
-		 }
+			System.out.print("\tResult:\n");
+
+			for(int i = 0; i < extract.size(); ++i){
+	
+				double tempLat = Double.parseDouble(extract.get(i).get(2));
+				double tempLong = Double.parseDouble(extract.get(i).get(3));
+
+				double gLat = Double.parseDouble(globalLat);
+				double gLong = Double.parseDouble(globalLong);
+
+				double test = calculateDistance(gLat, gLong, tempLat, tempLong);
+				
+				if(test < 30){
+
+					System.out.print("\tStore name: ");
+					System.out.print(extract.get(i).get(1));
+					System.out.println();
+					System.out.print("\tStore ID: ");
+					System.out.print(extract.get(i).get(0));
+					System.out.println();
+					System.out.println();
+
+				}
+
+			}
+
+	
+		}
          
       catch(Exception e){
          System.err.println (e.getMessage ());
