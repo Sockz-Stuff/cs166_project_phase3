@@ -27,6 +27,9 @@ import java.lang.Math;
 import java.util.Vector;
 import java.io.PushbackInputStream;
 import java.util.*; 
+import java.io.*;
+
+
 
 /**
  * This class defines a simple embedded SQL utility class that is designed to
@@ -557,12 +560,14 @@ public class Retail {
 		System.out.println();
 
 		boolean accepted = false;
+		String input = "";
+
 
 		while(!accepted){
 
 			
 			System.out.print("\tEnter storeID for desired store pickup: ");
-			String input = in.readLine();
+			input = in.readLine();
 			
 
 			for(int i = 0; i < available.size(); ++i){
@@ -579,6 +584,78 @@ public class Retail {
 			}
 		}
 
+		System.out.println("\tAvailable units at given store: ");
+		System.out.println();
+			
+		query = "select productName, numberOfUnits, pricePerUnit ";
+		String q1 = "from Product where storeID = ";
+	
+		query = query + q1 + input;
+	
+		extract = esql.executeQueryAndReturnResult(query);
+
+		for(int i = 0; i < extract.size(); ++i){
+
+			System.out.print("\tProduct name: ");
+			System.out.print(extract.get(i).get(0));
+			System.out.println();	
+
+			System.out.print("\tNumber of available units: ");
+			System.out.print(extract.get(i).get(1));
+			System.out.println();
+
+			System.out.print("\tPrice per unit: ");
+			System.out.print(extract.get(i).get(2));
+			System.out.println();
+			System.out.println();
+
+		} 
+
+		boolean paccepted = false;
+		boolean eaccepted = false;		
+
+		while(!paccepted ||  !eaccepted){
+
+			System.out.print("\tEnter product name you wish to order: ");
+			String porder = in.readLine().trim();
+			System.out.println();
+				
+			System.out.print("\tEnter number of units you wish to order: ");
+			int uorder = Integer.parseInt(in.readLine());
+
+			String expectedpname = "";
+			int expectedamount = 0;
+
+
+			for(int i = 0; i < extract.size(); ++i){
+
+				expectedpname = extract.get(i).get(0).trim();
+
+				expectedamount = Integer.parseInt(extract.get(i).get(1).trim());
+					
+				if(expectedpname.equals(porder)){
+					paccepted = true;
+					if(expectedamount >= uorder){
+						eaccepted = true;
+					}
+				}
+				
+
+
+			}
+
+			if(!paccepted){
+				System.out.println("\tProduct name not available please try again.");
+			}
+			else if(!eaccepted){
+				System.out.println("\tNumber of units not available please try again.");	
+				paccepted = false;
+					
+			}
+
+		}
+
+
 
 		
 
@@ -589,7 +666,9 @@ public class Retail {
 
 
    }
-   public static void viewRecentOrders(Retail esql) {}
+   public static  void viewRecentOrders(Retail esql) {
+
+   }
    public static void updateProduct(Retail esql) {}
    public static void viewRecentUpdates(Retail esql) {}
    public static void viewPopularProducts(Retail esql) {}
