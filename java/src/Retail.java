@@ -24,6 +24,9 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.ArrayList;
 import java.lang.Math;
+import java.util.Vector;
+import java.io.PushbackInputStream;
+import java.util.*; 
 
 /**
  * This class defines a simple embedded SQL utility class that is designed to
@@ -483,8 +486,109 @@ public class Retail {
       }
 	}
 
-   public static void viewProducts(Retail esql) {}
-   public static void placeOrder(Retail esql) {}
+   public static void viewProducts(Retail esql) {
+
+	try{
+	System.out.print("\tEnter Store ID to view products: ");
+	String input = in.readLine();
+
+	String query = "select productName, numberOfUnits, pricePerUnit ";
+	String q1 = "from Product where storeID = ";
+	
+	query = query + q1 + input;
+	
+	List<List<String>> extract = esql.executeQueryAndReturnResult(query);
+
+	for(int i = 0; i < extract.size(); ++i){
+
+		System.out.print("\tProduct name: ");
+		System.out.print(extract.get(i).get(0));
+		System.out.println();	
+
+		System.out.print("\tNumber of available units: ");
+		System.out.print(extract.get(i).get(1));
+		System.out.println();
+
+		System.out.print("\tPrice per unit: ");
+		System.out.print(extract.get(i).get(2));
+		System.out.println();
+		System.out.println();
+
+	} 
+	}
+	catch(Exception e){
+		System.err.println (e.getMessage ());
+	}
+   }
+   public static void placeOrder(Retail esql) {
+	try{
+		
+		Vector<String> available = new Vector<String>();
+
+		double lat1 = Double.parseDouble(globalLat);
+		double long1 = Double.parseDouble(globalLong);
+
+		String query = "SELECT * FROM Store";
+		List<List<String>> extract = esql.executeQueryAndReturnResult(query);
+
+		System.out.println("\tAvailable stores in your area: ");
+
+		for(int i = 0; i < extract.size(); ++i){
+	
+			double tempLat = Double.parseDouble(extract.get(i).get(2));
+			double tempLong = Double.parseDouble(extract.get(i).get(3));
+
+			double gLat = Double.parseDouble(globalLat);
+			double gLong = Double.parseDouble(globalLong);
+
+			double test = calculateDistance(gLat, gLong, tempLat, tempLong);
+
+			if(test < 30){
+
+				String temp = extract.get(i).get(0);
+				available.add(temp);
+				System.out.println('\t');
+				System.out.print('\t'+extract.get(i).get(0));
+			}
+
+		}
+
+		System.out.println();
+		System.out.println();
+
+		boolean accepted = false;
+
+		while(!accepted){
+
+			
+			System.out.print("\tEnter storeID for desired store pickup: ");
+			String input = in.readLine();
+			
+
+			for(int i = 0; i < available.size(); ++i){
+
+				if(Integer.valueOf(input) == Integer.valueOf(available.get(i))){
+					accepted = true;
+				}
+
+			}
+
+			if(!accepted){
+				System.out.print("\tStore not within 30 miles, please try again.");
+				System.out.println();
+			}
+		}
+
+
+		
+
+	}
+	catch(Exception e){
+		System.err.println (e.getMessage ());
+	}
+
+
+   }
    public static void viewRecentOrders(Retail esql) {}
    public static void updateProduct(Retail esql) {}
    public static void viewRecentUpdates(Retail esql) {}
