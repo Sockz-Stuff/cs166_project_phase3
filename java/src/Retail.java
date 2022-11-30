@@ -10,7 +10,7 @@
  *
  */
 
-
+import java.sql.*;
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.Statement;
@@ -28,6 +28,10 @@ import java.util.Vector;
 import java.io.PushbackInputStream;
 import java.util.*; 
 import java.io.*;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 
 
@@ -591,7 +595,8 @@ public class Retail {
 		String q1 = "from Product where storeID = ";
 	
 		query = query + q1 + input;
-	
+		String savedLoc = input;	
+
 		extract = esql.executeQueryAndReturnResult(query);
 
 		for(int i = 0; i < extract.size(); ++i){
@@ -614,14 +619,18 @@ public class Retail {
 		boolean paccepted = false;
 		boolean eaccepted = false;		
 
+		int uorder = 0;		
+		String porder = "";
+
+
 		while(!paccepted ||  !eaccepted){
 
 			System.out.print("\tEnter product name you wish to order: ");
-			String porder = in.readLine().trim();
+			porder = in.readLine().trim();
 			System.out.println();
 				
 			System.out.print("\tEnter number of units you wish to order: ");
-			int uorder = Integer.parseInt(in.readLine());
+			uorder = Integer.parseInt(in.readLine());
 
 			String expectedpname = "";
 			int expectedamount = 0;
@@ -656,8 +665,17 @@ public class Retail {
 		}
 
 
+	Timestamp timeat = new Timestamp(System.currentTimeMillis());
+	String mytime = timeat.toString();
 
-		
+
+
+	String newOrder = String.format("insert into orders (orderID, customerID, storeID, productName, unitsOrdered) VALUES (DEFAULT, %s, %s, '%s', %d);", globalID, savedLoc, porder, uorder);
+
+	System.out.println(newOrder);
+
+
+	esql.executeUpdate(newOrder);   
 
 	}
 	catch(Exception e){
