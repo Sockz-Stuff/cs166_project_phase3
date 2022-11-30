@@ -670,7 +670,7 @@ public class Retail {
 
 
 
-	String newOrder = String.format("insert into orders (orderID, customerID, storeID, productName, unitsOrdered) VALUES (DEFAULT, %s, %s, '%s', %d);", globalID, savedLoc, porder, uorder);
+	String newOrder = String.format("insert into orders (ordernumber, customerID, storeID, productName, unitsOrdered) VALUES (DEFAULT, %s, %s, '%s', %d);", globalID, savedLoc, porder, uorder);
 
 	System.out.println(newOrder);
 
