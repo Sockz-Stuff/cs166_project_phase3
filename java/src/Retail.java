@@ -667,10 +667,11 @@ public class Retail {
 
 	Timestamp timeat = new Timestamp(System.currentTimeMillis());
 	String mytime = timeat.toString();
+	java.util.Date date =new java.util.Date();
 
 
+	String newOrder = String.format("insert into orders (ordernumber, customerID, storeID, productName, unitsOrdered, OrderTime) VALUES (DEFAULT, %s, %s, '%s', %d, '%s');", globalID, savedLoc, porder, uorder, date);
 
-	String newOrder = String.format("insert into orders (ordernumber, customerID, storeID, productName, unitsOrdered) VALUES (DEFAULT, %s, %s, '%s', %d);", globalID, savedLoc, porder, uorder);
 
 	System.out.println(newOrder);
 
