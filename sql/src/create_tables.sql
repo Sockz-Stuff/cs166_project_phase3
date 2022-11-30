@@ -47,7 +47,7 @@ CREATE TABLE Orders (
                      storeID integer NOT NULL,
                      productName char(30) NOT NULL, 
                      unitsOrdered integer NOT NULL, 
-                     orderTime timestamp,
+                     orderTime char(40) NOT NULL,
                      PRIMARY KEY(orderNumber),
                      FOREIGN KEY(customerID) REFERENCES Users(userID),
                      FOREIGN KEY(storeID, productName) REFERENCES Product(storeID, productName)
