@@ -739,7 +739,88 @@ public class Retail {
                 System.err.println (e.getMessage ());
         }
    }
-   public static void updateProduct(Retail esql) {}
+   public static void updateProduct(Retail esql) {
+	try{
+		String q="select * from product";
+		List<List<String>>extract=esql.executeQueryAndReturnResult(q);
+		System.out.println("\tProduct List\n");
+		boolean uidacc=false;
+                 boolean infoacc=false;
+		int expectedSid=0;
+		String expectedpname="";
+		int expectedNum=0;
+		for(int i=0; i<extract.size();i++){
+			System.out.print("\tStoreID: ");
+                	System.out.print(extract.get(i).get(0));
+                	System.out.print(", ");
+                
+                	System.out.print("\tProduct Name: ");
+                	System.out.print(extract.get(i).get(1));
+                	System.out.print(", ");
+                
+                	System.out.print("\tNumber of Units: ");
+                	System.out.print(extract.get(i).get(2));
+                	System.out.print(", ");
+
+                	System.out.print("\tPrice Per Unit: ");
+                	System.out.print(extract.get(i).get(3));
+	                System.out.println();
+		}
+	String updating="";
+	String pname="";
+	while(!uidacc ||  !infoacc){
+
+                        System.out.print("\tStoreID of Store you wish to Update Products: ");
+			int sid=Integer.parseInt(in.readLine());
+                        System.out.println();
+			System.out.print("\tProduct Name of Product you wish to update ");
+                         pname=in.readLine().trim();
+                        System.out.println();
+			 updating= "\t1. StoreID\n\t2. Product name\n\t3. Number of Units\n\t4. Price Per Unit\n\n";
+			System.out.print(updating);
+                        System.out.print("\tEnter the number to the corresponding data you wish to update");
+                        int numUp = Integer.parseInt(in.readLine());
+
+
+                        for(int i = 0; i < extract.size(); ++i){
+
+                                expectedSid =Integer.parseInt(extract.get(i).get(0).trim());
+
+
+                                if(expectedSid==sid){
+                                        uidacc = true;
+					
+                                        if(numUp>0 || numUp<=6){
+                                                infoacc = true;
+                                        }
+                                }
+
+
+
+                        }
+
+                        if(!uidacc){
+                                System.out.println("\tStoreID not available please try again.");
+                        }
+                        else if(!infoacc){
+                                System.out.println("\tPlease pick a number 1-6 to update its corresponding data");
+				System.out.print(updating);
+                                infoacc = false;
+
+                        }
+
+                }
+	String query = "select storeID , productName, numberOfUnits, pricePerUnit";
+        String q1 = "from product where storeID= ";
+        q="'";
+        query = query + q1 +q+expectedSid+q;
+
+        esql.executeQuery(query);		
+		//have to check if the pname product name is entered correctly ny the user
+	}catch(Exception e){
+		System.err.println (e.getMessage());
+	}
+   }
    public static void viewRecentUpdates(Retail esql) {}
    public static void viewPopularProducts(Retail esql) {}
    public static void viewPopularCustomers(Retail esql) {}
