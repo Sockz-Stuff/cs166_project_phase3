@@ -890,7 +890,7 @@ public class Retail {
 		System.out.println("\tUser List\n");
 		boolean uidacc=false;
                  boolean infoacc=false;
-		int expectedSid=0;
+		int expecteduid=0;
 		String expectedpname="";
 		int expectedNum=0;
 		for(int i=0; i<extract.size();i++){
@@ -977,10 +977,10 @@ public class Retail {
 	else if(numUp ==4)
 		param = "latitude";
 	else if(numUp==5)
-		param="longitude"
+		param="longitude";
 	else
-		param="type"
-	String updateTime = "update user set " + param + " = " + toUpdate + " where UserID = '" + expecteduid + "';	
+		param="type";
+	String updateTime = "update users set " + param + " = " + "'"+toUpdate + "'"+" where UserID = '" + expecteduid + "'";	
 
 	esql.executeUpdate(updateTime);	
 
