@@ -678,21 +678,72 @@ public class Retail {
 
 	esql.executeUpdate(newOrder);   
 
+	query = "update product set numberofUnits=numberofUnits-";
+	Integer u = new Integer(uorder);
+	String uO =u.toString();
+	q1=" where storeID=";
+	String p=savedLoc.toString();
+	String p1=" and productName=";
+	String p2= porder.toString();
+	String quote="'";
+	query= query+quote+uO+quote+q1+quote+p+quote+p1+quote+p2+quote;
+	System.out.println(query);
+	esql.executeUpdate(query);
+
+      
 	}
 	catch(Exception e){
 		System.err.println (e.getMessage ());
 	}
 
-
-   }
+	
+   
+}
    public static  void viewRecentOrders(Retail esql) {
+	 try{
+        String query = "select o.storeID, s.name,o.productName,o.unitsOrdered, o.orderTime ";
+        String q1 = "from orders o, store s  where customerID = ";
+	String q2= " and s.storeID=o.storeID order by orderTime desc limit 5";
+	String q="'";
+        query = query + q1 +q+ globalID+q+ q2;
 
+        List<List<String>> extract = esql.executeQueryAndReturnResult(query);
+
+        for(int i = 0; i < extract.size(); ++i){
+
+                System.out.print("\tStoreID: ");
+                System.out.print(extract.get(i).get(0));
+                System.out.println();
+
+		System.out.print("\tStore Name: ");
+                System.out.print(extract.get(i).get(1));
+                System.out.println();
+
+                System.out.print("\tProduct Name: ");
+                System.out.print(extract.get(i).get(2));
+                System.out.println();
+
+                System.out.print("\tUnits Ordered: ");
+                System.out.print(extract.get(i).get(3));
+                System.out.println();
+
+		System.out.print("\torderTime: ");
+                System.out.print(extract.get(i).get(4));
+                System.out.println();
+                System.out.println();
+
+        }
+	//System.out.println(extract);
+        }
+        catch(Exception e){
+                System.err.println (e.getMessage ());
+        }
    }
    public static void updateProduct(Retail esql) {}
    public static void viewRecentUpdates(Retail esql) {}
    public static void viewPopularProducts(Retail esql) {}
    public static void viewPopularCustomers(Retail esql) {}
    public static void placeProductSupplyRequests(Retail esql) {}
-
-}//end Retail
+}
+//end Retail
 
