@@ -301,7 +301,8 @@ public class Retail {
                 System.out.println("7. View 5 Popular Items");
                 System.out.println("8. View 5 Popular Customers");
                 System.out.println("9. Place Product Supply Request to Warehouse");
-
+		System.out.println("10. Update Users");
+	
                 System.out.println(".........................");
                 System.out.println("20. Log out");
                 switch (readChoice()){
@@ -314,6 +315,7 @@ public class Retail {
                    case 7: viewPopularProducts(esql); break;
                    case 8: viewPopularCustomers(esql); break;
                    case 9: placeProductSupplyRequests(esql); break;
+		   case 10: updateUser(esql); break;
 
                    case 20: usermenu = false; break;
                    default : System.out.println("Unrecognized choice!"); break;
@@ -880,7 +882,29 @@ public class Retail {
 		System.err.println (e.getMessage());
 	}
    }
-   public static void viewRecentUpdates(Retail esql) {}
+
+   public static void updateUser(Retail esql){
+	try{
+
+		System.out.println("nismtm");
+
+
+	}catch(Exception e){
+		System.err.println(e.getMessage());
+	}
+   }
+
+
+   public static void viewRecentUpdates(Retail esql) {
+	try{
+
+		
+
+
+	}catch(Exception e){
+		System.err.println (e.getMessage());
+	}
+   }
    public static void viewPopularProducts(Retail esql) {}
    public static void viewPopularCustomers(Retail esql) {}
    public static void placeProductSupplyRequests(Retail esql) {}
