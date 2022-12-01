@@ -885,8 +885,109 @@ public class Retail {
 
    public static void updateUser(Retail esql){
 	try{
+	    String q="select * from users";
+		List<List<String>>extract=esql.executeQueryAndReturnResult(q);
+		System.out.println("\tUser List\n");
+		boolean uidacc=false;
+                 boolean infoacc=false;
+		int expectedSid=0;
+		String expectedpname="";
+		int expectedNum=0;
+		for(int i=0; i<extract.size();i++){
+			System.out.print("\tUserID: ");
+                	System.out.print(extract.get(i).get(0));
+                	System.out.print(", ");
+                
+                	System.out.print("\tName: ");
+                	System.out.print(extract.get(i).get(1));
+                	System.out.print(", ");
+                
+                	System.out.print("\tPassword: ");
+                	System.out.print(extract.get(i).get(2));
+                	System.out.print(", ");
 
-		System.out.println("nismtm");
+                	System.out.print("\tLatitude: ");
+                	System.out.print(extract.get(i).get(3));
+			System.out.print(", ");
+			
+			System.out.print("\tLongitude: ");
+                	System.out.print(extract.get(i).get(3));
+			System.out.print(", ");
+			
+			System.out.print("\tUser Type: ");
+                	System.out.print(extract.get(i).get(3));
+	                System.out.println();
+		}
+	String updating="";
+	int numUp = 69;
+	
+	while(!uidacc ||  !infoacc){
+
+                        System.out.print("\tEnter UserID of User you wish to update info: ");
+			int uid=Integer.parseInt(in.readLine());
+                        System.out.println();
+			 updating= "\t1. UserID\n\t2. Name\n\t3. Password\n\t4. Latitude\n\t5. Longitude\n\t6. User Type\n\n";
+			System.out.print(updating);
+                        System.out.print("\tEnter the number to the corresponding data you wish to update: ");
+                        numUp = Integer.parseInt(in.readLine());
+
+
+                        for(int i = 0; i < extract.size(); ++i){
+
+                                expecteduid =Integer.parseInt(extract.get(i).get(0).trim());
+
+
+                                if(expecteduid==uid){
+                                        uidacc = true;
+					
+                                        if(numUp>0 && numUp<=6){
+                                                infoacc = true;
+                                        }
+                                }
+
+
+
+                        }
+
+                        if(!uidacc){
+                                System.out.println("\tUserID not available please try again.");
+                        }
+                        else if(!infoacc){
+                                System.out.println("\tPlease pick a number 1-6 to update its corresponding data: ");
+				System.out.print(updating);
+                                infoacc = false;
+
+                        }
+
+                }
+  
+
+	System.out.print("\tWhat would you like to change this field to?: ");
+	String toUpdate = in.readLine();
+
+	//prob need some kind of input check here to make sure indesired behavior does not occur :( 
+
+	String param = "";
+	if(numUp == 1)
+		param = "userID";
+	else if(numUp == 2)
+		param = "name";
+	else if(numUp == 3)
+		param = "password";
+	else if(numUp ==4)
+		param = "latitude";
+	else if(numUp==5)
+		param="longitude"
+	else
+		param="type"
+	String updateTime = "update user set " + param + " = " + toUpdate + " where UserID = '" + expecteduid + "';	
+
+	esql.executeUpdate(updateTime);	
+
+
+	System.out.println("\tUpdate successful!!! Woohoo!!!");
+
+		
 
 
 	}catch(Exception e){
