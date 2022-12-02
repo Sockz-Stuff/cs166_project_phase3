@@ -1131,6 +1131,11 @@ public class Retail {
    public static void viewRecentUpdates(Retail esql) {
 	try{
 		
+		String q = "select pu.updateNumber, pu.managerID, pu.storeID, pu.productName, pu.updatedOn from productupdates pu, store s, orders o,users u where s.managerid = '";
+		String q2 = "' and pu.storeid = s.storeid and pu.managerid=u.userID group by pu.updatedOn order by count(pu.updatedOn) desc limit 5";
+		String q3 = q + globalID + q2;
+
+		esql.executeQueryAndPrintResult(q3);
 		
 
 
