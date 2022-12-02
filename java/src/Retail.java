@@ -1130,13 +1130,16 @@ public class Retail {
    }
    public static void viewRecentUpdates(Retail esql) {
 	try{
-		
+		String hold="select s.storeID from user u, store s where s.managerID= "+globalID;
+                List<List<String>>extract=esql.executeQueryAndReturnResult(hold);
+		for(int i=0; i<extract.size();i++){
+		String st=extract.get(i).get(0).trim();
 		String q = "select pu.updateNumber, pu.managerID, pu.storeID, pu.productName, pu.updatedOn from productupdates pu, store s, orders o,users u where s.managerid = '";
-		String q2 = "' and pu.storeid = s.storeid and pu.managerid=u.userID group by pu.updatedOn order by count(pu.updatedOn) desc limit 5";
-		String q3 = q + globalID + q2;
-
+		String q2 = "' and '";
+		String q4 ="'= s.storeid and pu.managerid=u.userID group by pu.updateNumber order by count(pu.updatedOn) desc limit 5";
+		String q3 = q + globalID + q2+st+q4;
 		esql.executeQueryAndPrintResult(q3);
-		
+		}
 
 
 	}catch(Exception e){
