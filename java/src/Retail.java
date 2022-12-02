@@ -1162,7 +1162,7 @@ public class Retail {
 		//listlist<string> extract = select count(customerID) from products group by productname
 		
 		String q = "select u.name, count(o.customerID) from store s, orders o,users u where s.managerid = '";
-		String q2 = "' and o.storeid = s.storeid group and o.customerID=u.userID by name order by count(o.customerID) desc limit 5";
+		String q2 = "' and o.storeid = s.storeid and o.customerID=u.userID group by u.name order by count(o.customerID) desc limit 5";
 		String q3 = q + globalID + q2;
 
 		esql.executeQueryAndPrintResult(q3);	
