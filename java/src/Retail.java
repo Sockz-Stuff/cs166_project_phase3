@@ -677,7 +677,6 @@ public class Retail {
 	String newOrder = String.format("insert into orders (ordernumber, customerID, storeID, productName, unitsOrdered, OrderTime) VALUES (DEFAULT, %s, %s, '%s', %d, '%s');", globalID, savedLoc, porder, uorder, date);
 
 
-	System.out.println(newOrder);
 
 
 	esql.executeUpdate(newOrder);   
@@ -691,9 +690,16 @@ public class Retail {
 	String p2= porder.toString();
 	String quote="'";
 	query= query+quote+uO+quote+q1+quote+p+quote+p1+quote+p2+quote;
-	System.out.println(query);
 	esql.executeUpdate(query);
 
+	String give_order = "select ordernumber from orders where customerid = '" + globalID + "'";
+
+	List<List<String>> quick = esql.executeQueryAndReturnResult(give_order);
+	String for_customer = quick.get(quick.size()-1).get(0);
+	
+	String message = "\tOrder number " + for_customer + " has been successfully placed!";
+
+	System.out.println(message);
       
 	}
 	catch(Exception e){
@@ -1011,7 +1017,35 @@ public class Retail {
                         System.out.print(extract.get(i).get(3));
                         System.out.println();
                 }
-		int sid=Integer.parseInt(extract.get(0).get(0).trim());
+
+		boolean store_exists = false;
+		String store_change = "";
+
+
+		while(!store_exists){
+
+			System.out.print("\tEnter the storeID which you wish to make updates to: ");
+			store_change = in.readLine().trim();
+
+
+			for(int i = 0; i < extract.size(); ++i){
+
+				String temp = extract.get(i).get(0).trim();
+
+				if(temp.equals(store_change)){
+					store_exists = true;
+				}
+
+			}
+
+			if(!store_exists){
+				System.out.println("\tStore not found, please try again.");
+			}
+
+		}
+
+		
+		int sid=Integer.parseInt(store_change);
 		System.out.print("\tProduct Name of Product you wish to update: ");
                 String pname=in.readLine().trim();
 		boolean pacc=false;
@@ -1104,7 +1138,24 @@ public class Retail {
 		System.err.println (e.getMessage());
 	}
    }
-   public static void viewPopularProducts(Retail esql) {}
+   public static void viewPopularProducts(Retail esql) {
+	try{
+	
+		//listlist<string> extract = select count(productName) from products group by productname
+		
+		String q = "select o.productname, count(o.productname) from store s, orders o where s.managerid = '";
+		String q2 = "' and o.storeid = s.storeid group by productname order by count(o.productname) desc limit 5";
+		String q3 = q + globalID + q2;
+
+		esql.executeQueryAndPrintResult(q3);	
+	
+		
+
+
+	}catch(Exception e){
+		System.err.println(e.getMessage());
+	}
+   }
    public static void viewPopularCustomers(Retail esql) {}
    public static void placeProductSupplyRequests(Retail esql) {}
 }
