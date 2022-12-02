@@ -875,7 +875,7 @@ public class Retail {
 	}
    }
 
-   public static void updateUserAdmin(Retail esql){i
+   public static void updateUserAdmin(Retail esql){
 	try{
 	    String q="select * from users";
 		List<List<String>>extract=esql.executeQueryAndReturnResult(q);
@@ -989,31 +989,63 @@ public class Retail {
 
    public static void updateProduct(Retail esql){
 	try{
-		String q="p.storeID, p.productName, p.numberOfUnits,p.pricePerUnit from product p, store s where s.managerID=";
+		String q="select p.storeID, p.productName, p.numberOfUnits,p.pricePerUnit from product p, store s where s.managerID=";
 		String q1=" and s.storeId=p.storeID";
-		q=q+"'"+globalId+"'"+q1;
+		q=q+"'"+globalID+"'"+q1;
 		List<List<String>>extract=esql.executeQueryAndReturnResult(q);
 		System.out.println("\tProduct List\n");
-		System.out.println(extract);
-		int sid=extract.get(0).get(0).trim();
+		for(int i=0; i<extract.size();i++){
+                        System.out.print("\tStoreID: ");
+                        System.out.print(extract.get(i).get(0));
+                        System.out.print(", ");
+
+                        System.out.print("\tProduct Name: ");
+                        System.out.print(extract.get(i).get(1));
+                        System.out.print(", ");
+
+                        System.out.print("\tNumber of Units: ");
+                        System.out.print(extract.get(i).get(2));
+                        System.out.print(", ");
+
+                        System.out.print("\tPrice Per Unit: ");
+                        System.out.print(extract.get(i).get(3));
+                        System.out.println();
+                }
+		int sid=Integer.parseInt(extract.get(0).get(0).trim());
 		System.out.print("\tProduct Name of Product you wish to update: ");
                 String pname=in.readLine().trim();
 		boolean pacc=false;
 		while(!pacc){
-			for(int i<0 i<extract.size();i++){
+			for(int i=0;i<extract.size();i++){
 				String expectedPname =extract.get(i).get(1).trim();	
-				if(expeectedPname.equals(pname)){
+				if(expectedPname.equals(pname)){
 					pacc=true;
 				}	
 			}
 			if(!pacc){
-			System.out.print(extract);
+			for(int i=0; i<extract.size();i++){
+                        System.out.print("\tStoreID: ");
+                        System.out.print(extract.get(i).get(0));
+                        System.out.print(", ");
+
+                        System.out.print("\tProduct Name: ");
+                        System.out.print(extract.get(i).get(1));
+                        System.out.print(", ");
+
+                        System.out.print("\tNumber of Units: ");
+                        System.out.print(extract.get(i).get(2));
+                        System.out.print(", ");
+
+                        System.out.print("\tPrice Per Unit: ");
+                        System.out.print(extract.get(i).get(3));
+                        System.out.println();
+                }
 			System.out.print("\tProduct does not exist at your store. Enter an existing Product Name at your Store: ");
 			pname=in.readLine().trim();
 			}
 		}
 	
-		System.out.println("\t1. Number of Units\n\t2.Price Per Unit\n\n\tWhat would you like to update? (Enter 1 or 2): ";
+		System.out.print("\t1. Number of Units\n\t2. Price Per Unit\n\n\tWhat would you like to update? (Enter 1 or 2): ");
 		int numUp=Integer.parseInt(in.readLine());
 		boolean notacc=false;
 		while(!notacc){
@@ -1021,7 +1053,7 @@ public class Retail {
                         	notacc = true;
                         }else{
 				System.out.print("Please Select 1 or 2 to update Number of Units or Price: ");
-				numUp=Intger.parseInt(in.readLine());
+				numUp=Integer.parseInt(in.readLine());
 			}
 		}
 		String param = "";
@@ -1043,7 +1075,7 @@ public class Retail {
 			}
 				
 		}
-		String updateTime = "update products set " + param + " = " + "'"+toUpdate + "'"+" where storeID = '" + sid + "'"+" and productName = '"+ pname+ "'";
+		String updateTime = "update product set " + param + " = " + "'"+toUpdate + "'"+" where storeID = '" + sid + "'"+" and productName = '"+ pname+ "'";
 		esql.executeUpdate(updateTime);	
 		System.out.println("first update to products");
 				   
@@ -1052,7 +1084,7 @@ public class Retail {
 		java.util.Date date =new java.util.Date();
 
 
-		String newOrder = String.format("insert into productUpdates (updatenumber, managerID, storeID, productName, updatedOn) VALUES (DEFAULT, %s, %s, '%s','%s');", globalID, sid, pnamef, date);
+		String newOrder = String.format("insert into productUpdates (updatenumber, managerID, storeID, productName, updatedOn) VALUES (DEFAULT, %s, %s, '%s','%s');", globalID, sid, pname, date);
 		esql.executeUpdate(newOrder);   
 		System.out.println("second update to productUpdate");
 
