@@ -823,6 +823,8 @@ public class Retail {
                         		System.out.println("\tThat is not an acceptable StoreID.") ;
                			}
 		}
+		//also add a 3. to update number of units and 4. to update price per unit
+		//also call productUpdates function after 1,2,3,4 are run
 		updating= "\t1. Add Product\n\t2. Delete Product\n\tPlease Enter 1 or 2: ";
                 System.out.print(updating);
 		String productCheck = "select p.storeID,p.productName, p.numberOfUnits, p.pricePerUnit from product p, store s where p.storeid = s.storeid and s.storeid = '";
@@ -937,6 +939,7 @@ public class Retail {
 	String updating="";
 	int numUp = 0;
 	boolean bnumUp=false;
+		//3 update user->what update? 1. name 2. password 3. lat 4. long 5. type
 	System.out.print("\t1. Add User\n\t2. Delete User\n\tEnter 1 (add user) or 2 (delete user): ");
 	while(!bnumUp){
 		try{
@@ -977,6 +980,7 @@ public class Retail {
 				System.out.print("\tThat is not a number. What is their longitude: ");
 			}
 		}
+		
 		//we assume they are type customer cause we cant add stores and there is only one admin, not necessarily
 		//might need to make sure cant enter empty char or space
 		//admin can do manager things, but for all stores-prof says in piazza-not stated in pdf?
