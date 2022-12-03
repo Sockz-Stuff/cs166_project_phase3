@@ -1182,7 +1182,126 @@ public class Retail {
 		System.err.println(e.getMessage());
 	}
    }
-   public static void placeProductSupplyRequests(Retail esql) {}
-}
+   public static void placeProductSupplyRequests(Retail esql) {
+   	
+	try{
+		String hold="select storeID, productName, numberOfUnits, pricePerUnit from user u, store s, product p where s.managerID= "+globalID;
+		hold=hold+"and p.storeID=s.storeID;
+        	List<List<String>>extract=esql.executeQueryAndReturnResult(hold);
+		System.out.print("\tEnter Store ID to Order Product for: ");
+		String sid = in.readLine().trim();
+		boolean sidacc=false;
+		while(!sidacc){
+			for(int i=0;i<extact.size();i++){
+				if(extract.get(i).get(0).trim()==sid){
+					sidacc=true;	
+				}
+			}
+			if(!sidacc){
+				System.out.println("\tYou are either not a manager of the store you entered or the store you entered does not exist.");
+				System.out.println("\tEnter Store ID to Order Product for: ");
+				sid = in.readLine().trim();
+			}
+		}	
+		String query = "select productName, numberOfUnits, pricePerUnit ";
+		String q1 = "from Product where storeID = ";
+	
+		query = query + q1 + sid;
+	
+		extract = esql.executeQueryAndReturnResult(query);
+
+		for(int i = 0; i < extract.size(); ++i){
+
+		System.out.print("\tProduct name: ");
+		System.out.print(extract.get(i).get(0));
+		System.out.println();	
+
+		System.out.print("\tNumber of available units: ");
+		System.out.print(extract.get(i).get(1));
+		System.out.println();
+
+		System.out.print("\tPrice per unit: ");
+		System.out.print(extract.get(i).get(2));
+		System.out.println();
+		System.out.println();
+
+		} 
+		//
+		System.out.print("\tEnter Product Name you would like to Order Units for: ");
+		String pname = in.readLine().trim();
+		boolean pacc=false;
+		while(!pacc){
+			for(int i=0;i<extact.size();i++){
+				if(extract.get(i).get(0).trim()==pname){
+					pacc=true;	
+				}
+			}
+			if(!pacc){
+				System.out.println("\tProduct Does Not Exist. Enter Store ID to Order Product for: ");
+				pname = in.readLine().trim();
+			}
+		}
+		String compare= "select * from warehouse w";
+		extract=esql.executeQueryAndReturnResult(compare);
+		for(int i = 0; i < extract.size(); ++i){
+
+		System.out.print("\tWarehouseID: ");
+		System.out.print(extract.get(i).get(0));
+		System.out.println();	
+
+		System.out.print("\area: ");
+		System.out.print(extract.get(i).get(1));
+		System.out.println();
+
+		System.out.print("\tLatitude: ");
+		System.out.print(extract.get(i).get(2));
+		System.out.println();
+			
+		System.out.print("\tLongitude: ");
+		System.out.print(extract.get(i).get(3));
+		System.out.println();
+		System.out.println();
+
+		} 
+		System.out.print("\tEnter WarehouseID you would like to Request Supply From: ");
+		int ware = Integer.parseInt(in.readLine().trim());
+		boolean wareacc=false;
+		while(!wareacc){
+			for(int i=0;i<extact.size();i++){
+				if(Integer.parseInt(extract.get(i).get(0).trim())==ware){
+					wareacc=true;	
+				}
+			}
+			if(!pacc){
+				System.out.println("\tProduct Does Not Exist. Enter Store ID to Order Product for: ");
+				input = in.readLine().trim();
+			}
+		}
+		System.out.println("\tHow many more Units would you like to Request?");
+		char units=in.readLine().trim();
+		boolean uacc=false;
+		while(!uacc){
+			if(Character.isDigit(units)){
+				uacc=true;	
+			}else{
+				System.out.println("\tPlease enter an integer for how many units of product you would like to request: ");
+				units = in.readLine().trim();
+			}
+		}
+		String updateTime = "update product set  numberOfUnits =  + "'"+units + "'"+" where storeID = '" + sid + "'"+" and productName = '"+ input+ "'";
+		esql.executeUpdate(updateTime);	
+		System.out.println("first update to products");
+		
+		String newOrder = String.format("insert into productSupplyRequests (requestNumber, managerID, warehouseID, storeID, productName, unitsRequested) VALUES (DEFAULT, %s, %s, '%s','%s', '%s');", globalID, ware, sid, pname, units);
+		esql.executeUpdate(newOrder);   
+		System.out.println("second update to productSupplyRequests");
+
+		
+	}catch(Exception e){
+		System.err.println (e.getMessage ());
+	}
+   
+	
+   }
 //end Retail
 
