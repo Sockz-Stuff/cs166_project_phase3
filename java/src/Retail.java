@@ -936,74 +936,81 @@ public class Retail {
 		}
 	String updating="";
 	int numUp = 0;
-	
-	while(infoacc || uidacc){
-                        System.out.print("\tEnter UserID of User you wish to update info: ");
-			int uid=Integer.parseInt(in.readLine());
-                        System.out.println();
-			 updating= "\t1. UserID\n\t2. Name\n\t3. Password\n\t4. Latitude\n\t5. Longitude\n\t6. User Type\n\n";
-			System.out.print(updating);
-                        System.out.print("\tEnter the number to the corresponding data you wish to update: ");
-                        numUp = Integer.parseInt(in.readLine());
-
-
-                        for(int i = 0; i < extract.size(); ++i){
-
-                                expecteduid =Integer.parseInt(extract.get(i).get(0).trim());
-
-
-                                if(expecteduid==uid){
-                                        uidacc = true;
-					
-                                        if(numUp>0 && numUp<=6){
-                                                infoacc = true;
-                                        }
-                                }
-
-
-
-                        }
-
-                        if(!uidacc){
-                                System.out.println("\tUserID not available please try again.");
-                        }
-                        else if(!infoacc){
-                                System.out.println("\tPlease pick a number 1-6 to update its corresponding data: ");
-				System.out.print(updating);
-                                infoacc = false;
-
-                        }
-
-                }
-  
-
-	System.out.print("\tWhat would you like to change this field to?: ");
-	String toUpdate = in.readLine();
-
-	//prob need some kind of input check here to make sure indesired behavior does not occur :( 
-
-	String param = "";
-	if(numUp == 1)
-		param = "userID";
-	else if(numUp == 2)
-		param = "name";
-	else if(numUp == 3)
-		param = "password";
-	else if(numUp ==4)
-		param = "latitude";
-	else if(numUp==5)
-		param="longitude";
-	else
-		param="type";
-	String updateTime = "update users set " + param + " = " + "'"+toUpdate + "'"+" where UserID = '" + expecteduid + "'";	
-
-	esql.executeUpdate(updateTime);	
-
-
-	System.out.println("\tUpdate successful!!! Woohoo!!!");
-
+	boolean bnumUp=false;
+	System.out.print("\t1. Add User\n\t2. Delete User\n\tEnter 1 (add user) or 2 (delete user): ");
+	while(!bnumUp){
+		try{
+			numUp=Integer.parseInt(in.readLine().trim());
+			if(numUp==1 ||numUp==2){
+				bnumUp=true;
+			}else{
+				System.out.print("\tEnter 1 (add user) or 2 (delete user): ");	
+			}
+		}catch(NumberFormatException e){
+			System.out.print("\tEnter 1 (add user) or 2 (delete user): ");	
+		}
+	}
+	if(numUp==1){
+		System.out.print("\tEnter name of User you wish to add: ");
+		String uname=in.readLine().trim();
+		System.out.print("\tEnter password for User you wish to add: ");
+		String pass=in.readLine().trim();
+		boolean blat=false;
+		int lat=0;
+		int lon=0;
+		boolean blong=false;
+		System.out.print("\tWhat is their latitude: ");
+		while(!blat){
+			try{
+				lat=Integer.parseInt(in.readLine().trim());
+				blat=true;
+			}catch(NumberFormatException e){
+				System.out.print("\tThat is not a number. What is their latitude: ");
+			}
+		}
+		System.out.print("\tWhat is their longitude: ");
+		while(!blong){
+			try{
+				lon=Integer.parseInt(in.readLine().trim());
+				blong=true;
+			}catch(NumberFormatException e){
+				System.out.print("\tThat is not a number. What is their longitude: ");
+			}
+		}
+		//we assume they are type customer cause we cant add stores and there is only one admin, not necessarily
+		//might need to make sure cant enter empty char or space
+		//admin can do manager things, but for all stores-prof says in piazza-not stated in pdf?
+		//admin can remove and add users and products
+		//do we default userid or an we make it any number we want->delete old manager and add new user with that id as manager?
+		String cust="customer";
+		String Add=String.format("insert into users (userID, name, password,latitude,longitude,type) VALUES (DEFAULT,'%s','%s',%d,%d,'%s');",uname, pass,lat,lon,cust);
+		esql.executeUpdate(Add);
+		esql.executeQueryAndPrintResult(extract);
 		
-
+	}else{
+		System.out.print("\tEnter name of UserID of User you'd like to delete: ");
+		int uid=0;
+		while(!uidacc){
+			try{
+				int uid=Integer.parseInt(in.readLine().trim());
+				for(int i=0; i<extract.size();i++){
+					if(uid==Integer.parseInt(extract.get(i).get(0).trim(0)){
+						uidacc=true;	
+					}else{
+						System.out.print("Please Enter an existing UserID: ");	
+					}
+				}
+			}catch(NumberFormatException e){
+				System.out.print("\tPlease Enter a Number for UserID: ");	
+			}
+				
+		}
+		String del= "delete from users where UserID='"+uid+"';
+		esql.executeUpdate(del);
+		esql.executeQueryAndPrintResult(extract);
+					   
+	}
+	System.out.println("\tUpdate successful!!! Woohoo!!!");
 
 	}catch(Exception e){
 		System.err.println(e.getMessage());
