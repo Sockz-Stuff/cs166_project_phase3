@@ -500,9 +500,23 @@ public class Retail {
    public static void viewProducts(Retail esql) {
 
 	try{
+	String saccquery="select storeID from store";
+	esql.executeQueryAndPrintResult(saccquery);
+	List<List<String>> s=esql.executeQueryAndReturnResult(saccquery);
 	System.out.print("\tEnter Store ID to view products: ");
-	String input = in.readLine();
-
+	String input = in.readLine().trim();
+	boolean sacc=false;
+	while(!sacc){
+		for(int i=0;i<s.size();i++){
+			if(input.equals(s.get(i).get(0).trim())){
+				sacc=true;
+			}
+		}
+		if(!sacc){
+			System.out.print("\tStoreID does not exist. Enter Store ID to view Products: ");
+			input=in.readLine().trim();
+		}
+	}
 	String query = "select productName, numberOfUnits, pricePerUnit ";
 	String q1 = "from Product where storeID = ";
 	
@@ -580,7 +594,7 @@ public class Retail {
 
 			for(int i = 0; i < available.size(); ++i){
 
-				if(Integer.valueOf(input) == Integer.valueOf(available.get(i))){
+				if(input.equals(available.get(i))){
 					accepted = true;
 				}
 
@@ -634,8 +648,15 @@ public class Retail {
 			System.out.println();
 				
 			System.out.print("\tEnter number of units you wish to order: ");
-			uorder = Integer.parseInt(in.readLine());
-
+			boolean isnum=false;
+			while(!isnum){
+				try{
+				uorder = Integer.parseInt(in.readLine());
+				isnum=true;
+				}catch(NumberFormatException e){
+				System.out.print("Please enter an integer amount for units you wish to order: ");
+				}
+			}
 			String expectedpname = "";
 			int expectedamount = 0;
 
@@ -750,8 +771,9 @@ public class Retail {
         }
    }
    public static void updateProductAdmin(Retail esql) {
-	try{
-		String q="select * from product";
+	try{	
+		
+		String q="select * from product order by storeID";
 		List<List<String>>extract=esql.executeQueryAndReturnResult(q);
 		System.out.println("\tProduct List\n");
 		boolean uidacc=false;
@@ -778,100 +800,96 @@ public class Retail {
 		}
 	String updating="";
 	String pname="";
-
-	int numUp = 69;
-	
-	while(!uidacc ||  !infoacc){
-
-                        System.out.print("\tStoreID of Store you wish to Update Products: ");
-			int sid=Integer.parseInt(in.readLine());
-                        System.out.println();
-			System.out.print("\tProduct Name of Product you wish to update ");
-                         pname=in.readLine().trim();
-                        System.out.println();
-			 updating= "\t1. StoreID\n\t2. Product name\n\t3. Number of Units\n\t4. Price Per Unit\n\n";
-			System.out.print(updating);
-                        System.out.print("\tEnter the number to the corresponding data you wish to update: ");
-                        numUp = Integer.parseInt(in.readLine());
-
-
-                        for(int i = 0; i < extract.size(); ++i){
-
-                                expectedSid =Integer.parseInt(extract.get(i).get(0).trim());
-
-
-                                if(expectedSid==sid){
-                                        uidacc = true;
+	int sid=0;
+	int numUp = 0;
+	boolean innernumUp=false;
+	boolean innersid=false;
+	boolean innerpname=false;		
+		while(!innersid){
+			System.out.print("\tStoreID of Store where you wish to Update Products: ");
+				try{
+					 expectedSid=Integer.parseInt(in.readLine().trim());	
 					
-                                        if(numUp>0 && numUp<=4){
-                                                infoacc = true;
-                                        }
-                                }
-
-
-
-                        }
-
-                        if(!uidacc){
-                                System.out.println("\tStoreID not available please try again.");
-                        }
-                        else if(!infoacc){
-                                System.out.println("\tPlease pick a number 1-6 to update its corresponding data: ");
-				System.out.print(updating);
-                                infoacc = false;
-
-                        }
-
-                }
-
-
-	String productCheck = "select productName p from product p, store s where p.storeid = s.storeid and s.storeid = '";
-	productCheck = productCheck + expectedSid + "'";
-
-	List<List<String>> productlists = esql.executeQueryAndReturnResult(productCheck);
-	boolean check_product = false;
-
-	pname = pname.trim();
-	
-	while(!check_product){
-
-		for(int i = 0; i < productlists.size(); ++i){
-			
-		
-
-			String temp = productlists.get(i).get(0).trim();
-
-			if(temp.equals(pname)){
-				check_product = true;
+					for(int i=0;i<extract.size();i++){
+						sid=Integer.parseInt(extract.get(i).get(0).trim());
+						if(expectedSid==sid){
+							innersid=true;
+						}
+					}
+					if(!innersid){
+						System.out.println("\tThat is not an acceptable StoreID");
+					}
+				}catch(NumberFormatException e){
+                        		System.out.println("\tThat is not an acceptable StoreID.") ;
+               			}
+		}
+		updating= "\t1. Add Product\n\t2. Delete Product\n\tPlease Enter 1 or 2: ";
+                System.out.print(updating);
+		String productCheck = "select p.storeID,p.productName, p.numberOfUnits, p.pricePerUnit from product p, store s where p.storeid = s.storeid and s.storeid = '";
+                productCheck = productCheck + expectedSid + "'";
+                List<List<String>> productlists = esql.executeQueryAndReturnResult(productCheck);
+		while(!innernumUp){
+			try{
+				numUp=Integer.parseInt(in.readLine().trim());
+				if(numUp==1||numUp==2){
+					innernumUp=true;
+				}	
+			}catch(NumberFormatException e){
 			}
+			if(!innernumUp){
+				System.out.print("\tPlease Enter 1 (to Add Product) or 2 (to Delete Product): ");
+			}	
+		}
+		
+                if(numUp==1){
+			System.out.println("\tWhat is the Product Name you are adding: ");
+			pname=in.readLine().trim();
+			boolean bnumU=false;
+			boolean bprice=false;
+			int numU=0;
+			int price=0;
+			while(!bnumU){
+				System.out.print("\tWhat is the amount of units?: ");
+				try{
+					numU=Integer.parseInt(in.readLine().trim());
+					bnumU=true;
+				}catch(NumberFormatException e){
+					System.out.println("\tThat is not an Integer, Try Again");
+				}
+			}
+			while(!bprice){
+                                System.out.print("\tWhat is the Price per Unit?: ");
+                                try{
+                                        price=Integer.parseInt(in.readLine().trim());
+                                        bprice=true;
+                                }catch(NumberFormatException e){
+                                        System.out.println("\tThat is not an Integer, Try Again");
+                                }
+                        }
+			String Add=String.format("insert into product (storeID, productName, numberOfUnits,pricePerUnit) VALUES (%d,'%s',%d,%d);",expectedSid, pname,numU,price);
+			esql.executeUpdate(Add);
+			esql.executeQueryAndPrintResult(productCheck);
+			//add new product here
+		}else{
+			boolean bpname=false;
+			 pname="";
+			while(!bpname){
+				System.out.println("\tWhat is the Product (name) that you are deleting: ");
+				pname=in.readLine().trim();
+				for(int i=0;i<productlists.size();i++){
+					if(pname.equals(productlists.get(i).get(1).trim())){
+						bpname=true;
+					}
+				}
+				if(!bpname){
+					System.out.println("\tThat Product Name does not exist at the store you are trying to delete from. Try Again.");
+				}
+			}
+			String del= "delete from product where storeID='"+expectedSid+"' and productName='"+pname+"'";
+			esql.executeUpdate(del);
+			 esql.executeQueryAndPrintResult(productCheck);	
 		}
 
-
-		if(!check_product){
-			System.out.println("\tProduct not found in store, please try again.");
-			pname = in.readLine().trim();
-		}
-	}
-  
-
-	System.out.print("\tWhat would you like to change this field to?: ");
-	String toUpdate = in.readLine();
-
-	//prob need some kind of input check here to make sure indesired behavior does not occur :( 
-
-	String param = "";
-	if(numUp == 1)
-		param = "storeID";
-	else if(numUp == 2)
-		param = "productName";
-	else if(numUp == 3)
-		param = "numberOfUnits";
-	else
-		param = "pricePerUnit";
-
-	String updateTime = "update product set " + param + " = " + toUpdate + " where storeID = '" + expectedSid + "' and productName = '" + pname + "'";	
-
-	esql.executeUpdate(updateTime);	
 
 
 	System.out.println("\tUpdate successful!!! Woohoo!!!");
@@ -883,7 +901,7 @@ public class Retail {
 
    public static void updateUserAdmin(Retail esql){
 	try{
-	    String q="select * from users";
+	    String q="select * from users order by userID";
 		List<List<String>>extract=esql.executeQueryAndReturnResult(q);
 		System.out.println("\tUser List\n");
 		boolean uidacc=false;
@@ -917,10 +935,9 @@ public class Retail {
 	                System.out.println();
 		}
 	String updating="";
-	int numUp = 69;
+	int numUp = 0;
 	
-	while(!uidacc ||  !infoacc){
-
+	while(infoacc || uidacc){
                         System.out.print("\tEnter UserID of User you wish to update info: ");
 			int uid=Integer.parseInt(in.readLine());
                         System.out.println();
@@ -996,7 +1013,7 @@ public class Retail {
    public static void updateProduct(Retail esql){
 	try{
 		String q="select p.storeID, p.productName, p.numberOfUnits,p.pricePerUnit from product p, store s where s.managerID=";
-		String q1=" and s.storeId=p.storeID";
+		String q1=" and s.storeId=p.storeID order by p.storeID";
 		q=q+"'"+globalID+"'"+q1;
 		List<List<String>>extract=esql.executeQueryAndReturnResult(q);
 		System.out.println("\tProduct List\n");
@@ -1080,34 +1097,46 @@ public class Retail {
 		}
 	
 		System.out.print("\t1. Number of Units\n\t2. Price Per Unit\n\n\tWhat would you like to update? (Enter 1 or 2): ");
-		int numUp=Integer.parseInt(in.readLine());
-		boolean notacc=false;
+		 
+		int nu=0;
+		boolean notacc=false;	
 		while(!notacc){
-			if(numUp>0 && numUp<=2){
-                        	notacc = true;
-                        }else{
-				System.out.print("Please Select 1 or 2 to update Number of Units or Price: ");
-				numUp=Integer.parseInt(in.readLine());
+			try{
+				int numUp=Integer.parseInt(in.readLine());	
+				if(numUp>0 && numUp<=2){
+                	        	nu=numUp;
+					notacc = true;
+                        	}else{
+					System.out.print("Please Select 1 or 2 to update Number of Units or Price: ");
+				}
+			}catch(NumberFormatException e){
+				System.out.print("\tPlease Enter 1 or 2 to Update Number of Units or Price: ");
 			}
 		}
 		String param = "";
-		if(numUp == 1)
+		if(nu == 1)
 			param = "numberOfUnits";
 		else 
 			param="pricePerUnit";
 				   
 		System.out.print("\tWhat would you like to change this field to?: ");
-		int toUpdate = Integer.parseInt(in.readLine());
+		
 				   //might break cause int
 		boolean upacc=false;
-		while(!upacc){
-			if(toUpdate>0){
-			upacc=true;
-			}else{
-			System.out.print("\tnot acceptable input. Try again: ");
-		 	toUpdate = Integer.parseInt(in.readLine());	
-			}
+		int toUpdate=0;
+		 while(!upacc){
+			try{
+				 toUpdate = Integer.parseInt(in.readLine());
+				if(toUpdate>0){
+				upacc=true;
+				}else{
+				System.out.print("\tnot acceptable input. Try again: ");
+				}
 				
+			
+			}catch(NumberFormatException e){
+				System.out.print("\tPlease Enter an integer: ");
+			}
 		}
 		String updateTime = "update product set " + param + " = " + "'"+toUpdate + "'"+" where storeID = '" + sid + "'"+" and productName = '"+ pname+ "'";
 		esql.executeUpdate(updateTime);	
@@ -1185,21 +1214,42 @@ public class Retail {
    public static void placeProductSupplyRequests(Retail esql) {
    	
 	try{
-		String hold="select storeID, productName, numberOfUnits, pricePerUnit from user u, store s, product p where s.managerID= "+globalID;
-		hold=hold+"and p.storeID=s.storeID;
+		String hold="select p.storeID, p.productName, p.numberOfUnits, p.pricePerUnit from user u, store s, product p where s.managerID= "+globalID;
+		hold=hold+"and p.storeID=s.storeID order by p.storeID";
         	List<List<String>>extract=esql.executeQueryAndReturnResult(hold);
+		for(int i = 0; i < extract.size(); ++i){
+
+                System.out.print("\tStoreID: ");
+                System.out.print(extract.get(i).get(0));
+                System.out.println();
+		
+		System.out.print("\tProduct Name: ");
+                System.out.print(extract.get(i).get(1));
+                System.out.println();
+
+                System.out.print("\tNumber of available units: ");
+                System.out.print(extract.get(i).get(2));
+                System.out.println();
+
+                System.out.print("\tPrice per unit: ");
+                System.out.print(extract.get(i).get(3));
+                System.out.println();
+                System.out.println();
+
+                }
+		
 		System.out.print("\tEnter Store ID to Order Product for: ");
 		String sid = in.readLine().trim();
 		boolean sidacc=false;
 		while(!sidacc){
-			for(int i=0;i<extact.size();i++){
-				if(extract.get(i).get(0).trim()==sid){
+			for(int i=0;i<extract.size();i++){
+				if(sid.equals(extract.get(i).get(0).trim())){
 					sidacc=true;	
 				}
 			}
 			if(!sidacc){
 				System.out.println("\tYou are either not a manager of the store you entered or the store you entered does not exist.");
-				System.out.println("\tEnter Store ID to Order Product for: ");
+				System.out.print("\tEnter Store ID to Order Product for: ");
 				sid = in.readLine().trim();
 			}
 		}	
@@ -1230,17 +1280,21 @@ public class Retail {
 		System.out.print("\tEnter Product Name you would like to Order Units for: ");
 		String pname = in.readLine().trim();
 		boolean pacc=false;
+		int ogunits=0;
 		while(!pacc){
-			for(int i=0;i<extact.size();i++){
-				if(extract.get(i).get(0).trim()==pname){
+			for(int i=0;i<extract.size();i++){
+				if(pname.equals(extract.get(i).get(0).trim())){
+					ogunits=Integer.parseInt(extract.get(i).get(1).trim());
 					pacc=true;	
 				}
 			}
 			if(!pacc){
-				System.out.println("\tProduct Does Not Exist. Enter Store ID to Order Product for: ");
+				System.out.print("\tProduct Does Not Exist. Enter Product Name to Order: ");
 				pname = in.readLine().trim();
 			}
-		}
+		}	
+		System.out.println();
+		System.out.println("\tWarehouse List\n");
 		String compare= "select * from warehouse w";
 		extract=esql.executeQueryAndReturnResult(compare);
 		for(int i = 0; i < extract.size(); ++i){
@@ -1249,7 +1303,7 @@ public class Retail {
 		System.out.print(extract.get(i).get(0));
 		System.out.println();	
 
-		System.out.print("\area: ");
+		System.out.print("\tarea: ");
 		System.out.print(extract.get(i).get(1));
 		System.out.println();
 
@@ -1264,38 +1318,43 @@ public class Retail {
 
 		} 
 		System.out.print("\tEnter WarehouseID you would like to Request Supply From: ");
-		int ware = Integer.parseInt(in.readLine().trim());
+		String ware = in.readLine().trim();
 		boolean wareacc=false;
 		while(!wareacc){
-			for(int i=0;i<extact.size();i++){
-				if(Integer.parseInt(extract.get(i).get(0).trim())==ware){
+			for(int i=0;i<extract.size();i++){
+				if(ware.equals(extract.get(i).get(0).trim())){
 					wareacc=true;	
 				}
 			}
-			if(!pacc){
-				System.out.println("\tProduct Does Not Exist. Enter Store ID to Order Product for: ");
-				input = in.readLine().trim();
+			if(!wareacc){
+				System.out.print("\tWarehouse Does not exist. Enter Warehouse ID to Order Product from: ");
+				ware = in.readLine().trim();
 			}
 		}
-		System.out.println("\tHow many more Units would you like to Request?");
-		char units=in.readLine().trim();
+		System.out.print("\tHow many more Units would you like to Request?: ");
 		boolean uacc=false;
+		int units=0;
 		while(!uacc){
-			if(Character.isDigit(units)){
-				uacc=true;	
-			}else{
-				System.out.println("\tPlease enter an integer for how many units of product you would like to request: ");
-				units = in.readLine().trim();
+			try{
+			units=Integer.parseInt(in.readLine().trim());
+			uacc=true;
+			}catch(NumberFormatException e){
+			System.out.print("\tThat is not a valid unit amount. Enter the amount of units you would like to request: ");
+			uacc=false;
 			}
 		}
-		String updateTime = "update product set  numberOfUnits =  + "'"+units + "'"+" where storeID = '" + sid + "'"+" and productName = '"+ input+ "'";
+		int req=units;
+		units=units+ogunits;
+		String updateTime = "update product set  numberOfUnits = " + units +" where storeID = '" + sid + "'"+" and productName = '"+ pname+ "'";
 		esql.executeUpdate(updateTime);	
 		System.out.println("first update to products");
 		
-		String newOrder = String.format("insert into productSupplyRequests (requestNumber, managerID, warehouseID, storeID, productName, unitsRequested) VALUES (DEFAULT, %s, %s, '%s','%s', '%s');", globalID, ware, sid, pname, units);
+		String newOrder = String.format("insert into productSupplyRequests (requestNumber, managerID, warehouseID, storeID, productName, unitsRequested) VALUES (DEFAULT, %s, %s, '%s','%s', %d);", globalID, ware, sid, pname, req);
 		esql.executeUpdate(newOrder);   
 		System.out.println("second update to productSupplyRequests");
-
+		
+		String work="select * from productSupplyRequests";
+		esql.executeQueryAndPrintResult(work);		
 		
 	}catch(Exception e){
 		System.err.println (e.getMessage ());
@@ -1304,4 +1363,4 @@ public class Retail {
 	
    }
 //end Retail
-
+}
