@@ -825,7 +825,8 @@ public class Retail {
 		}
 		//also add a 3. to update number of units and 4. to update price per unit
 		//also call productUpdates function after 1,2,3,4 are run
-		updating= "\t1. Add Product\n\t2. Delete Product\n\tPlease Enter 1 or 2: ";
+
+		updating = "\t1. Add Product \n\t 2. Delete Product /n/t 3. Edit an existing product: \n\t Enter 1 or 2 or 3: ";
                 System.out.print(updating);
 		String productCheck = "select p.storeID,p.productName, p.numberOfUnits, p.pricePerUnit from product p, store s where p.storeid = s.storeid and s.storeid = '";
                 productCheck = productCheck + expectedSid + "'";
@@ -872,7 +873,7 @@ public class Retail {
 			esql.executeUpdate(Add);
 			esql.executeQueryAndPrintResult(productCheck);
 			//add new product here
-		}else{
+		}else if (numUp == 2){
 			boolean bpname=false;
 			 pname="";
 			while(!bpname){
@@ -890,6 +891,86 @@ public class Retail {
 			String del= "delete from product where storeID='"+expectedSid+"' and productName='"+pname+"'";
 			esql.executeUpdate(del);
 			 esql.executeQueryAndPrintResult(productCheck);	
+		}
+		
+		else if(numUp == 3){
+			
+			//productlist
+			
+			for(int i = 0; i < productlist; ++i){
+				System.out.print("Product Name: ");
+				System.out.println(productlist.get(i).get(1));
+				
+				System.out.print("Number of units: ");
+				System.out.println(productlist.get(i).get(2));
+				
+				System.out.print("Price per unit: ");
+				System.out.println(productlist.get(i).get(3));
+			}
+			
+			System.out.println("\tWhich product which you like to make edits to? \n\t Enter product name: ");
+			String selection = in.readLine().trim();
+			
+			boolean exists = false;
+			int existsAt = 0;
+			while(!exists){
+				
+			for(int i = 0; i < productlist.size(); ++i){
+			
+				if(productlist.get(i).get(1).equals(selection)){
+					exists = true;
+					existsAt = i;
+				}
+				
+			}
+				
+				if(!exists){
+				
+					System.out.println("\tError: Product name did not match inventory, please try again. \n\tEnter product name: ");
+					selection = in.readLine().trim();
+					
+				}
+				
+			}
+			
+			System.out.println("\tPlease enter which attribute you wish to edit:");
+			System.out.println("\t1: Product name \n\t2: Number of Units \n\t3: Cost per Unit \n\tAttribute: ");
+			
+			boolean isAtt = false;
+			int trythis = 0;
+			
+			while(!isAtt){
+				
+				try{
+					trythis = Integer.parseInt(in.readLine().trim());
+					if(trythis > 0 && trythis < 4){
+						isAtt = true;
+					}
+					
+					if(!isAtt){
+					
+						System.out.println("\tInput did not match 1 - 3, please try again: ");
+						
+					}
+				}
+				catch(NumberFormatException e){
+					System.out.println("\tThat is not an Integer, Try Again");
+				}
+			}
+			
+			String chocie = "";
+			if(trythis == 1) { choice = "productname";}
+			else if(trythis == 2) {choice = "numberofunits";}
+			else if(trythis == 3) {choice = "priceperunit";}
+			else{exit(55));
+			     
+			
+			
+			
+			
+		}
+		else{	
+			exit(30);
 		}
 
 
