@@ -826,7 +826,7 @@ public class Retail {
 		//also add a 3. to update number of units and 4. to update price per unit
 		//also call productUpdates function after 1,2,3,4 are run
 
-		updating = "\t1. Add Product \n\t 2. Delete Product /n/t 3. Edit an existing product: \n\t Enter 1 or 2 or 3: ";
+		updating = "\t1. Add Product \n\t 2. Delete Product \n\t 3. Edit an existing product: \n\t Enter 1 or 2 or 3: ";
                 System.out.print(updating);
 		String productCheck = "select p.storeID,p.productName, p.numberOfUnits, p.pricePerUnit from product p, store s where p.storeid = s.storeid and s.storeid = '";
                 productCheck = productCheck + expectedSid + "'";
@@ -834,7 +834,7 @@ public class Retail {
 		while(!innernumUp){
 			try{
 				numUp=Integer.parseInt(in.readLine().trim());
-				if(numUp==1||numUp==2){
+				if(numUp==1||numUp==2||numUp==3){
 					innernumUp=true;
 				}	
 			}catch(NumberFormatException e){
@@ -900,18 +900,19 @@ public class Retail {
 			//productlist
 		
 			String productChecks = "select p.storeID,p.productName, p.numberOfUnits, p.pricePerUnit from product p, store s where p.storeid = s.storeid and s.storeid = '";
-                	productCheck = productChecks + expectedSid + "'";
+                	productChecks = productChecks + expectedSid + "'";
                 	List<List<String>> productlist = esql.executeQueryAndReturnResult(productChecks);
 	
 			for(int i = 0; i < productlist.size(); ++i){
-				System.out.print("Product Name: ");
+				System.out.print("\tProduct Name: ");
 				System.out.println(productlist.get(i).get(1));
 				
-				System.out.print("Number of units: ");
+				System.out.print("\tNumber of units: ");
 				System.out.println(productlist.get(i).get(2));
 				
-				System.out.print("Price per unit: ");
+				System.out.print("\tPrice per unit: ");
 				System.out.println(productlist.get(i).get(3));
+				System.out.println();
 			}
 			
 			System.out.println("\tWhich product which you like to make edits to? \n\t Enter product name: ");
@@ -923,7 +924,7 @@ public class Retail {
 				
 			for(int i = 0; i < productlist.size(); ++i){
 			
-				if(productlist.get(i).get(1).equals(selection)){
+				if(productlist.get(i).get(1).trim().equals(selection)){
 					exists = true;
 					existsAt = i;
 				}
@@ -968,21 +969,24 @@ public class Retail {
 			if(trythis == 1) { choice = "productname";}
 			else if(trythis == 2) {choice = "numberofunits";}
 			else if(trythis == 3) {choice = "priceperunit";}
-			else{System.out.print("error");}}
+			else{System.out.print("error");}
 			     
 			System.out.println("\tEnter value you wish to change it to: ");
-			String updateTo;
-			int updateTonNum; //= Integer.parseInt(updateTo);
-			
+			String updateTo = in.readLine().trim();
+			int updateToNum = 0; //= Integer.parseInt(updateTo);
+		
 			if(trythis == 1){
 				
-				updateTo = in.readLine().trim();
+				//updateTo = in.readLine().trim();
 				String updateTime = "update product set " + choice + " = " + "'"+updateTo + "'"+" where storeID = '" + expectedSid + "'"+" and productName = '"+ selection+ "'";
 				esql.executeUpdate(updateTime);
-				
+				String orderUp="update order set "+choice+"="+"'"+updateTo+"'"+"where productName='"+extract.get(existsAt).get(1);
 				String returnResult = "select * from product";
 				esql.executeQueryAndPrintResult(returnResult);
-				
+			
+				java.util.Date date =new java.util.Date();
+				String newOrder = String.format("insert into productUpdates (updatenumber, managerID, storeID, productName, updatedOn) VALUES (DEFAULT, %s, %s, '%s','%s');", globalID, expectedSid, selection, date);
+				esql.executeUpdate(newOrder);   	
 			}
 			
 			else if(trythis == 2 || trythis == 3){
@@ -992,19 +996,25 @@ public class Retail {
 				while(!isCorrect){
 				
 					try{
-						updateTonNum = Integer.parseInt(updateTo);
-						isAtt = true;
+						updateToNum = Integer.parseInt(updateTo);
+						isCorrect = true;
 					}
 					catch(NumberFormatException e){
-						System.out.println("\tThat is not an Integer, Try Again");
+						System.out.println("\tThat is not an Integer, Try Again: ");
+						updateTo = in.readLine().trim();
 					}
 				}
 				
 				String updateTime = "update product set " + choice + " = " + "'"+updateToNum + "'"+" where storeID = '" + expectedSid + "'"+" and productName = '"+ selection+ "'";
 				esql.executeUpdate(updateTime);
-				
+			
+				java.util.Date date =new java.util.Date();
+				String newOrder = String.format("insert into productUpdates (updatenumber, managerID, storeID, productName, updatedOn) VALUES (DEFAULT, %s, %s, '%s','%s');", globalID, expectedSid, selection, date);
+
+
+	
 				String returnResult = "select * from product";
-				esql.exectueQueryAndPrintResult(returnResult);
+				esql.executeQueryAndPrintResult(returnResult);
 				
 			}
 			
@@ -1013,13 +1023,13 @@ public class Retail {
 			
 		}
 		else{	
-			exit(30);
+			System.out.println("error");;
 		}
 
 
 
 	System.out.println("\tUpdate successful!!! Woohoo!!!");
-	}
+	
 	}catch(Exception e){
 		System.err.println (e.getMessage());
 	}
@@ -1113,16 +1123,16 @@ public class Retail {
 		String cust="customer";
 		String Add=String.format("insert into users (userID, name, password,latitude,longitude,type) VALUES (DEFAULT,'%s','%s',%d,%d,'%s');",uname, pass,lat,lon,cust);
 		esql.executeUpdate(Add);
-		esql.executeQueryAndPrintResult(extract);
+		esql.executeQueryAndPrintResult(q);
 		
 	}else{
 		System.out.print("\tEnter name of UserID of User you'd like to delete: ");
 		int uid=0;
 		while(!uidacc){
 			try{
-				int uid=Integer.parseInt(in.readLine().trim());
+				uid=Integer.parseInt(in.readLine().trim());
 				for(int i=0; i<extract.size();i++){
-					if(uid==Integer.parseInt(extract.get(i).get(0).trim(0))){
+					if(uid==Integer.parseInt(extract.get(i).get(0).trim())){
 						uidacc=true;	
 					}else{
 						System.out.print("Please Enter an existing UserID: ");	
@@ -1135,7 +1145,7 @@ public class Retail {
 		}
 		String del= "delete from users where UserID='"+uid+"'";
 		esql.executeUpdate(del);
-		esql.executeQueryAndPrintResult(extract);
+		esql.executeQueryAndPrintResult(q);
 					   
 	}
 	System.out.println("\tUpdate successful!!! Woohoo!!!");
