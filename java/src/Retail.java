@@ -962,11 +962,48 @@ public class Retail {
 			if(trythis == 1) { choice = "productname";}
 			else if(trythis == 2) {choice = "numberofunits";}
 			else if(trythis == 3) {choice = "priceperunit";}
-			else{exit(55));
+			else{exit(55)};
 			     
+			System.out.println("\tEnter value you wish to change it to: ");
+			String updateTo;
+			int updateTonNum; //= Integer.parseInt(updateTo);
+			
+			if(trythis == 1){
+				
+				updateTo = in.readLine().trim();
+				String updateTime = "update product set " + choice + " = " + "'"+updateTo + "'"+" where storeID = '" + expectedSid + "'"+" and productName = '"+ selection+ "'";
+				esql.executeUpdate(updateTime);
+				
+				String returnResult = "select * from product";
+				esql.exectueQueryAndPrintResult(returnResult);
+				
+			}
+			
+			else if(trythis == 2 || trythis == 3){
+			
+				
+				boolean isCorrect = false;
+				while(!isCorrect){
+				
+					try{
+						updateTonNum = Integer.parseInt(updateTo);
+						isAtt = true;
+					}
+					catch(NumberFormatException e){
+						System.out.println("\tThat is not an Integer, Try Again");
+					}
+				}
+				
+				String updateTime = "update product set " + choice + " = " + "'"+updateToNum + "'"+" where storeID = '" + expectedSid + "'"+" and productName = '"+ selection+ "'";
+				esql.executeUpdate(updateTime);
+				
+				String returnResult = "select * from product";
+				esql.exectueQueryAndPrintResult(returnResult);
+				
+			}
 			
 			
-			
+			System.out.println("\tUpdate successful, woohoo!!");
 			
 		}
 		else{	
