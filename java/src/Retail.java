@@ -374,7 +374,7 @@ public class Retail {
    public static void CreateUser(Retail esql){
       try{
          System.out.print("\tEnter name: ");
-         String name = in.readLine();
+         String name = in.readLine().trim();
          System.out.print("\tEnter password: ");
          String password = in.readLine();
          System.out.print("\tEnter latitude: ");   
@@ -383,6 +383,17 @@ public class Retail {
          String longitude = in.readLine();
          
          String type="Customer";
+
+	List<List<String>> check = esql.executeQueryAndReturnResult("select * from users");
+
+	for(int i = 0; i < check.size(); ++i){
+
+		String temp = check.get(i).get(1).trim();
+		if(temp.equals(name)){
+			throw new Exception("User with that name already exists");
+		}
+
+	} 
 
 			String query = String.format("INSERT INTO USERS (name, password, latitude, longitude, type) VALUES ('%s','%s', %s, %s,'%s')", name, password, latitude, longitude, type);
 
@@ -1082,7 +1093,7 @@ public class Retail {
 			if(numUp == 1 ||numUp == 2 || numUp == 3){
 				bnumUp=true;
 			}else{
-				System.out.print("\tEnter 1 (add user) or 2 (delete user): ");	
+				System.out.print("\tEnter 1 (add user) or 2 (delete user) or 3 (Edit User): ");	
 			}
 		}catch(NumberFormatException e){
 			System.out.print("\tEnter 1 (add user) or 2 (delete user) or 3 (Edit User): ");
