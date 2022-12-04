@@ -1047,44 +1047,45 @@ public class Retail {
 		int expectedNum=0;
 		for(int i=0; i<extract.size();i++){
 			System.out.print("\tUserID: ");
-                	System.out.print(extract.get(i).get(0));
+                	System.out.print(extract.get(i).get(0).trim());
                 	System.out.print(", ");
                 
                 	System.out.print("\tName: ");
-                	System.out.print(extract.get(i).get(1));
+                	System.out.print(extract.get(i).get(1).trim());
                 	System.out.print(", ");
                 
                 	System.out.print("\tPassword: ");
-                	System.out.print(extract.get(i).get(2));
+                	System.out.print(extract.get(i).get(2).trim());
                 	System.out.print(", ");
 
                 	System.out.print("\tLatitude: ");
-                	System.out.print(extract.get(i).get(3));
+                	System.out.print(extract.get(i).get(3).trim());
 			System.out.print(", ");
 			
 			System.out.print("\tLongitude: ");
-                	System.out.print(extract.get(i).get(3));
+                	System.out.print(extract.get(i).get(4).trim());
 			System.out.print(", ");
 			
 			System.out.print("\tUser Type: ");
-                	System.out.print(extract.get(i).get(3));
+                	System.out.print(extract.get(i).get(5).trim());
 	                System.out.println();
 		}
 	String updating="";
 	int numUp = 0;
 	boolean bnumUp=false;
 		//3 update user->what update? 1. name 2. password 3. lat 4. long 5. type
-	System.out.print("\t1. Add User\n\t2. Delete User\n\tEnter 1 (add user) or 2 (delete user): ");
+	System.out.print("\t1. Add User\n\t2. Delete User\n\t3. Edit Existing User");
+	System.out.print("\n\tEnter 1, 2, or 3: ");
 	while(!bnumUp){
 		try{
 			numUp=Integer.parseInt(in.readLine().trim());
-			if(numUp==1 ||numUp==2){
+			if(numUp == 1 ||numUp == 2 || numUp == 3){
 				bnumUp=true;
 			}else{
 				System.out.print("\tEnter 1 (add user) or 2 (delete user): ");	
 			}
 		}catch(NumberFormatException e){
-			System.out.print("\tEnter 1 (add user) or 2 (delete user): ");	
+			System.out.print("\tEnter 1 (add user) or 2 (delete user) or 3 (Edit User): ");
 		}
 	}
 	if(numUp==1){
@@ -1125,7 +1126,7 @@ public class Retail {
 		esql.executeUpdate(Add);
 		esql.executeQueryAndPrintResult(q);
 		
-	}else{
+	}else if(numUp == 2){
 		System.out.print("\tEnter name of UserID of User you'd like to delete: ");
 		int uid=0;
 		while(!uidacc){
@@ -1147,6 +1148,109 @@ public class Retail {
 		esql.executeUpdate(del);
 		esql.executeQueryAndPrintResult(q);
 					   
+	}
+	else if(numUp == 3){
+		
+		String input = "";
+		boolean dec = false;
+		
+		while(!dec){
+
+			System.out.println("\tEnter the User ID you wish to make edits to: ");
+			input = in.readLine().trim();
+			
+			for(int i = 0; i < extract.size(); ++i){
+				
+				String temp = extract.get(i).get(0).trim();
+				if(temp.equals(input)){
+					dec = true;
+				}
+	
+			}
+
+			if(!dec){
+				System.out.println("\tError, invalid User ID, please try again.");
+			} 
+		}
+
+		dec = false;
+		int choice = 0;
+
+
+		while(!dec){
+			
+			System.out.println("\tWhich field do you wish to make edits to:");
+			System.out.println("\t1. Password \n\t2. Latitude \n\t3. Longitude");
+	
+			try{
+				choice = Integer.parseInt(in.readLine().trim());
+
+				if(choice == 1 || choice == 2 || choice == 3){
+					dec = true;
+				}
+				else{
+					System.out.println("\tUnrecognized choice, please try again.");
+				}
+			}
+			catch(NumberFormatException e){
+				System.out.println("\tError, input not recognized please try again.");
+			}
+
+		}
+
+		String field;
+		if(choice == 1){
+
+			field = "password";
+			String updateIt = "";			
+
+			System.out.println("\tWhat would you like to update the password to:" );
+			updateIt = in.readLine().trim();
+
+			String qbody = "update users set password = '" + updateIt +"' where userid = " + input;
+			esql.executeUpdate(qbody);
+
+			esql.executeQueryAndPrintResult("select * from users"); 
+
+		}
+		
+
+		else if(choice == 2 || choice == 3){
+	
+			if(choice == 2){field = "latitude";}
+			else{field = "longitude";}
+
+			int updateNum = 0;
+
+			dec = false;
+			while(!dec){
+
+				System.out.println("\tWhat would you like to change this field to: ");
+				
+				try{
+					updateNum = Integer.parseInt(in.readLine().trim());
+					dec = true;
+				}
+				catch(NumberFormatException e){
+					System.out.println("\tError: Unrecognized Input, please try again.");
+				}
+				
+
+			}
+
+
+			String q2 = "update users set " + field + " = " + updateNum + "where userid = " + input;
+			esql.executeUpdate(q2);
+		
+			esql.executeQueryAndPrintResult("select * from users");
+
+		
+		}
+			
+		
+	}
+	else{
+		System.out.println("error");
 	}
 	System.out.println("\tUpdate successful!!! Woohoo!!!");
 
