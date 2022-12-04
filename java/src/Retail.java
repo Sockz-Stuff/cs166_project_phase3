@@ -838,7 +838,9 @@ public class Retail {
 					innernumUp=true;
 				}	
 			}catch(NumberFormatException e){
+				System.out.println("Not a number:");
 			}
+			
 			if(!innernumUp){
 				System.out.print("\tPlease Enter 1 (to Add Product) or 2 (to Delete Product): ");
 			}	
@@ -896,8 +898,12 @@ public class Retail {
 		else if(numUp == 3){
 			
 			//productlist
-			
-			for(int i = 0; i < productlist; ++i){
+		
+			String productChecks = "select p.storeID,p.productName, p.numberOfUnits, p.pricePerUnit from product p, store s where p.storeid = s.storeid and s.storeid = '";
+                	productCheck = productChecks + expectedSid + "'";
+                	List<List<String>> productlist = esql.executeQueryAndReturnResult(productChecks);
+	
+			for(int i = 0; i < productlist.size(); ++i){
 				System.out.print("Product Name: ");
 				System.out.println(productlist.get(i).get(1));
 				
@@ -958,11 +964,11 @@ public class Retail {
 				}
 			}
 			
-			String chocie = "";
+			String choice = "";
 			if(trythis == 1) { choice = "productname";}
 			else if(trythis == 2) {choice = "numberofunits";}
 			else if(trythis == 3) {choice = "priceperunit";}
-			else{exit(55)};
+			else{System.out.print("error");}}
 			     
 			System.out.println("\tEnter value you wish to change it to: ");
 			String updateTo;
@@ -975,7 +981,7 @@ public class Retail {
 				esql.executeUpdate(updateTime);
 				
 				String returnResult = "select * from product";
-				esql.exectueQueryAndPrintResult(returnResult);
+				esql.executeQueryAndPrintResult(returnResult);
 				
 			}
 			
@@ -1013,7 +1019,7 @@ public class Retail {
 
 
 	System.out.println("\tUpdate successful!!! Woohoo!!!");
-
+	}
 	}catch(Exception e){
 		System.err.println (e.getMessage());
 	}
@@ -1116,7 +1122,7 @@ public class Retail {
 			try{
 				int uid=Integer.parseInt(in.readLine().trim());
 				for(int i=0; i<extract.size();i++){
-					if(uid==Integer.parseInt(extract.get(i).get(0).trim(0)){
+					if(uid==Integer.parseInt(extract.get(i).get(0).trim(0))){
 						uidacc=true;	
 					}else{
 						System.out.print("Please Enter an existing UserID: ");	
@@ -1127,7 +1133,7 @@ public class Retail {
 			}
 				
 		}
-		String del= "delete from users where UserID='"+uid+"';
+		String del= "delete from users where UserID='"+uid+"'";
 		esql.executeUpdate(del);
 		esql.executeQueryAndPrintResult(extract);
 					   
