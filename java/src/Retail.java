@@ -1104,6 +1104,19 @@ public class Retail {
 		String uname=in.readLine().trim();
 		System.out.print("\tEnter password for User you wish to add: ");
 		String pass=in.readLine().trim();
+		
+		List<List<String>> checker = esql.executeQueryAndReturnResult("select * from users");
+
+		for(int i = 0; i < checker.size(); ++i){
+
+			String temp = checker.get(i).get(1).trim();
+
+			if(temp.equals(uname)){
+				throw new Exception("User with that name already exists");
+			}
+
+		}
+
 		boolean blat=false;
 		int lat=0;
 		int lon=0;
