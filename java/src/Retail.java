@@ -51,11 +51,10 @@ public class Retail {
                                 new InputStreamReader(System.in));
 
 
-   public static String globalType;
    public static String globalID;
    public static String globalLat;
    public static String globalLong;
-
+   public static String globalType;
    /**
     * Creates a new instance of Retail shop
     *
@@ -290,20 +289,28 @@ public class Retail {
               while(usermenu) {
                 System.out.println("MAIN MENU");
                 System.out.println("---------");
-                System.out.println("1. View Stores within 30 miles");
+                
+		System.out.println("1. View Stores within 30 miles");
                 System.out.println("2. View Product List");
-                System.out.println("3. Place a Order");
+                
+		if(globalType.equals("customer")){
+		System.out.println("3. Place a Order");
                 System.out.println("4. View 5 recent orders");
+		}		
 
+		if(globalType.equals("manager")){
                 //the following functionalities basically used by managers
                 System.out.println("5. Update Product");
                 System.out.println("6. View 5 recent Product Updates Info");
                 System.out.println("7. View 5 Popular Items");
                 System.out.println("8. View 5 Popular Customers");
                 System.out.println("9. Place Product Supply Request to Warehouse");
+		};
+
+		if(globalType.equals("admin")){
 		System.out.println("10. Update Users");
 		System.out.println("11. Update Product");
-	
+		}
                 System.out.println(".........................");
                 System.out.println("20. Log out");
                 switch (readChoice()){
@@ -382,7 +389,7 @@ public class Retail {
          System.out.print("\tEnter longitude: ");  //enter long value between [0.0, 100.0]
          String longitude = in.readLine();
          
-         String type="Customer";
+         String type="customer";
 
 	List<List<String>> check = esql.executeQueryAndReturnResult("select * from users");
 
@@ -420,13 +427,13 @@ public class Retail {
          int userNum = esql.executeQuery(query);
 	 if (userNum > 0){
 		
-		query = String.format("Select u.userID, u.latitude, u.longitude FROM Users u WHERE name = '%s' AND password = '%s'", name, password);
+		query = String.format("Select u.userID, u.latitude, u.longitude, u.type FROM Users u WHERE name = '%s' AND password = '%s'", name, password);
 		List<List<String>> extract = esql.executeQueryAndReturnResult(query);
 		String userid = extract.get(0).get(0);
 		globalID = userid;
 		globalLat = extract.get(0).get(1);
 		globalLong = extract.get(0).get(2);
-		
+		globalType = extract.get(0).get(3).trim();
 		/*
 		System.out.print("\tUsers lat: ");
 		System.out.print(globalLat);
@@ -558,7 +565,11 @@ public class Retail {
    }
    public static void placeOrder(Retail esql) {
 	try{
-		
+	
+		if(!globalType.equals("customer")){
+			throw new Exception("\tInvalid entry, please try again.");
+		}
+			
 		Vector<String> available = new Vector<String>();
 
 		double lat1 = Double.parseDouble(globalLat);
@@ -743,6 +754,11 @@ public class Retail {
 }
    public static  void viewRecentOrders(Retail esql) {
 	 try{
+
+	if(!globalType.equals("customer")){
+		throw new Exception("\tInvalid entry, please try again.");
+	}
+	
         String query = "select o.storeID, s.name,o.productName,o.unitsOrdered, o.orderTime ";
         String q1 = "from orders o, store s  where customerID = ";
 	String q2= " and s.storeID=o.storeID order by orderTime desc limit 5";
@@ -783,7 +799,11 @@ public class Retail {
    }
    public static void updateProductAdmin(Retail esql) {
 	try{	
-		
+	
+		if(!globalType.equals("admin")){
+			throw new Exception("\tInvalid entry, please try again.");
+		}
+	
 		String q="select * from product order by storeID";
 		List<List<String>>extract=esql.executeQueryAndReturnResult(q);
 		System.out.println("\tProduct List\n");
@@ -1048,7 +1068,11 @@ public class Retail {
 
    public static void updateUserAdmin(Retail esql){
 	try{
-	    String q="select * from users order by userID";
+		if(!globalType.equals("admin")){
+			throw new Exception("\tInvalid entry, please try again.");
+		}
+		
+	    	String q="select * from users order by userID";
 		List<List<String>>extract=esql.executeQueryAndReturnResult(q);
 		System.out.println("\tUser List\n");
 		boolean uidacc=false;
@@ -1285,6 +1309,11 @@ public class Retail {
 
    public static void updateProduct(Retail esql){
 	try{
+		if(!globalType.equals("manager")){
+
+			throw new Exception("\tInvalid Entry, please try again.");
+		}		
+
 		String q="select p.storeID, p.productName, p.numberOfUnits,p.pricePerUnit from product p, store s where s.managerID=";
 		String q1=" and s.storeId=p.storeID order by p.storeID";
 		q=q+"'"+globalID+"'"+q1;
@@ -1432,6 +1461,11 @@ public class Retail {
    }
    public static void viewRecentUpdates(Retail esql) {
 	try{
+
+		if(!globalType.equals("manager")){
+			throw new Exception("Invalid entry, please try again.");
+		}
+
 		String hold="select s.storeID from user u, store s where s.managerID= "+globalID;
                 List<List<String>>extract=esql.executeQueryAndReturnResult(hold);
 		for(int i=0; i<extract.size();i++){
@@ -1468,6 +1502,10 @@ public class Retail {
    }
    public static void viewPopularCustomers(Retail esql) {
    	try{
+		
+		if(!globalType.equals("manager")){
+			throw new Exception("\tInvalid entry, please try again.");
+		}
 	
 		//listlist<string> extract = select count(customerID) from products group by productname
 		
@@ -1486,7 +1524,11 @@ public class Retail {
    }
    public static void placeProductSupplyRequests(Retail esql) {
    	
-	try{
+	try{	
+		if(!globalType.equals("manager")){
+			throw new Exception("\tInvalid entry, please try again.");
+		}
+		
 		String hold="select p.storeID, p.productName, p.numberOfUnits, p.pricePerUnit from user u, store s, product p where s.managerID= "+globalID;
 		hold=hold+"and p.storeID=s.storeID order by p.storeID";
         	List<List<String>>extract=esql.executeQueryAndReturnResult(hold);
